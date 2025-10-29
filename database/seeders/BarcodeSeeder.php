@@ -13,11 +13,13 @@ class BarcodeSeeder extends Seeder
     public function run(): void
     {
         $barcodes = [
-            ['code' => 'BRG001', 'name' => 'Alat Tulis Kantor', 'description' => 'Perlengkapan alat tulis'],
-            ['code' => 'BRG002', 'name' => 'Konsumsi', 'description' => 'Biaya konsumsi rapat'],
-            ['code' => 'BRG003', 'name' => 'Kebersihan', 'description' => 'Perlengkapan kebersihan'],
-            ['code' => 'BRG004', 'name' => 'Operasional', 'description' => 'Biaya operasional harian'],
-            ['code' => 'BRG005', 'name' => 'Transportasi', 'description' => 'Biaya transportasi'],
+            ['code' => 'DKM-001', 'name' => 'DAKWAH', 'description' => 'DAKWAH'],
+            ['code' => 'DKM-002', 'name' => 'SARPRAS', 'description' => 'SARPRAS'],
+            ['code' => 'DKM-003', 'name' => 'SOSMAS', 'description' => 'SOSMAS'],
+            ['code' => 'DKM-004', 'name' => 'PENSI', 'description' => 'PENSI'],
+            ['code' => 'DKM-005', 'name' => 'KEMUSLIMAHAN', 'description' => 'KEMUSLIMAHAN'],
+            ['code' => 'DKM-006', 'name' => 'BANK', 'description' => 'BANK'],
+            ['code' => 'DKM-007', 'name' => 'BANTUAN', 'description' => 'BANTUAN'],
         ];
 
         foreach ($barcodes as $barcode) {

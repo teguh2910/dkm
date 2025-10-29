@@ -3,23 +3,28 @@
 ## 📄 Fitur yang Ditambahkan
 
 ### 1. **Download Format Excel** 📥
+
 Tombol untuk download template/format Excel yang sudah tersedia di `public/format.xlsx`
 
 **Lokasi:**
-- Halaman Daftar Pengeluaran (Index)
-- Tombol hijau: "📄 Download Format Excel"
+
+-   Halaman Daftar Pengeluaran (Index)
+-   Tombol hijau: "📄 Download Format Excel"
 
 **Cara Kerja:**
+
 1. Klik tombol "Download Format Excel"
 2. File `Format_Pengeluaran_Kas_DKM.xlsx` akan otomatis terdownload
 3. Bisa digunakan sebagai template untuk input data
 
 **Route:**
+
 ```php
 GET /cash-expenses/download-format
 ```
 
 **Controller Method:**
+
 ```php
 public function downloadFormat()
 {
@@ -31,13 +36,16 @@ public function downloadFormat()
 ---
 
 ### 2. **Print Detail Pengeluaran** 🖨️
+
 Tombol untuk print/cetak detail pengeluaran kas kecil
 
 **Lokasi:**
-- Halaman Detail Pengeluaran (Show)
-- Tombol hijau: "🖨️ Print"
+
+-   Halaman Detail Pengeluaran (Show)
+-   Tombol hijau: "🖨️ Print"
 
 **Cara Kerja:**
+
 1. Buka detail pengeluaran
 2. Klik tombol "Print"
 3. Browser akan membuka dialog print
@@ -45,11 +53,12 @@ Tombol untuk print/cetak detail pengeluaran kas kecil
 5. Hanya detail data yang akan dicetak
 
 **Fitur Print:**
-- Auto-hide header aplikasi
-- Auto-hide semua tombol (Edit, Kembali, Print)
-- Format print optimized
-- Background putih untuk hemat tinta
-- Border hitam pada card
+
+-   Auto-hide header aplikasi
+-   Auto-hide semua tombol (Edit, Kembali, Print)
+-   Format print optimized
+-   Background putih untuk hemat tinta
+-   Border hitam pada card
 
 ---
 
@@ -63,11 +72,11 @@ Tombol untuk print/cetak detail pengeluaran kas kecil
     a.btn {
         display: none !important;
     }
-    
+
     body {
         background: white;
     }
-    
+
     .card {
         box-shadow: none;
         border: 1px solid #000;
@@ -101,11 +110,13 @@ resources/views/cash-expenses/
 ## 🚀 Cara Penggunaan
 
 ### Download Format Excel:
+
 1. Buka halaman utama (http://localhost:8000)
 2. Klik tombol hijau "📄 Download Format Excel"
 3. File akan terdownload dengan nama `Format_Pengeluaran_Kas_DKM.xlsx`
 
 ### Print Detail:
+
 1. Klik tombol "Detail" pada data pengeluaran
 2. Klik tombol hijau "🖨️ Print"
 3. Pilih printer atau "Save as PDF"
@@ -116,15 +127,18 @@ resources/views/cash-expenses/
 ## ⚙️ Konfigurasi
 
 ### Mengganti File Format Excel:
+
 1. Replace file `public/format.xlsx` dengan template baru
 2. Pastikan nama file tetap `format.xlsx` atau
 3. Update di `CashExpenseController.php`:
-   ```php
-   $filePath = public_path('nama_file_baru.xlsx');
-   ```
+    ```php
+    $filePath = public_path('nama_file_baru.xlsx');
+    ```
 
 ### Mengubah Nama Download:
+
 Edit di `CashExpenseController.php`:
+
 ```php
 return response()->download($filePath, 'Nama_File_Baru.xlsx');
 ```
@@ -134,6 +148,7 @@ return response()->download($filePath, 'Nama_File_Baru.xlsx');
 ## 🎯 Testing
 
 ### Test Download:
+
 ```
 ✅ Klik tombol "Download Format Excel"
 ✅ File terdownload dengan benar
@@ -142,6 +157,7 @@ return response()->download($filePath, 'Nama_File_Baru.xlsx');
 ```
 
 ### Test Print:
+
 ```
 ✅ Klik tombol "Print"
 ✅ Dialog print muncul
@@ -155,18 +171,21 @@ return response()->download($filePath, 'Nama_File_Baru.xlsx');
 ## 💡 Tips
 
 **Print to PDF:**
-- Pilih "Save as PDF" di dialog print
-- Lebih ramah lingkungan
-- Bisa di-share digital
+
+-   Pilih "Save as PDF" di dialog print
+-   Lebih ramah lingkungan
+-   Bisa di-share digital
 
 **Excel Template:**
-- Buat format Excel sesuai kebutuhan
-- Simpan sebagai `format.xlsx` di folder `public/`
-- Otomatis bisa didownload
+
+-   Buat format Excel sesuai kebutuhan
+-   Simpan sebagai `format.xlsx` di folder `public/`
+-   Otomatis bisa didownload
 
 **Customize Print Layout:**
-- Edit `@media print` styles di `layouts/app.blade.php`
-- Bisa tambahkan logo, watermark, dll
+
+-   Edit `@media print` styles di `layouts/app.blade.php`
+-   Bisa tambahkan logo, watermark, dll
 
 ---
 

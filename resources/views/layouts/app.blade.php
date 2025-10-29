@@ -219,6 +219,7 @@
 
         /* Print Styles */
         @media print {
+
             .header,
             .btn,
             button,

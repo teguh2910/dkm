@@ -7,6 +7,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <h2 style="font-size: 20px; font-weight: 600; color: #1f2937;">Detail Pengeluaran Kas Kecil</h2>
             <div style="display: flex; gap: 8px;">
+                <button onclick="window.print()" class="btn btn-success">🖨️ Print</button>
                 <a href="{{ route('cash-expenses.edit', $cashExpense) }}" class="btn btn-warning">Edit</a>
                 <a href="{{ route('cash-expenses.index') }}" class="btn btn-secondary">Kembali</a>
             </div>

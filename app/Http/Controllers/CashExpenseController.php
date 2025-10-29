@@ -108,4 +108,20 @@ class CashExpenseController extends Controller
             ->back()
             ->with('success', "Status approval {$role} berhasil diupdate");
     }
+
+    /**
+     * Download format Excel template.
+     */
+    public function downloadFormat()
+    {
+        $filePath = public_path('format.xlsx');
+
+        if (! file_exists($filePath)) {
+            return redirect()
+                ->back()
+                ->with('error', 'File format tidak ditemukan');
+        }
+
+        return response()->download($filePath, 'Format_Pengeluaran_Kas_DKM.xlsx');
+    }
 }

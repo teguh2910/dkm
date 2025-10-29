@@ -216,6 +216,29 @@
             font-size: 12px;
             margin-top: 4px;
         }
+
+        /* Print Styles */
+        @media print {
+            .header,
+            .btn,
+            button,
+            a.btn {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+        }
     </style>
 
     @stack('styles')

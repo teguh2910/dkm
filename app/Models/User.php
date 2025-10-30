@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,5 +45,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is Dept PIC.
+     */
+    public function isDeptPic(): bool
+    {
+        return $this->role === 'dept_pic';
+    }
+
+    /**
+     * Check if user is Bendahara.
+     */
+    public function isBendahara(): bool
+    {
+        return $this->role === 'bendahara';
+    }
+
+    /**
+     * Check if user is Sekretaris.
+     */
+    public function isSekretaris(): bool
+    {
+        return $this->role === 'sekretaris';
+    }
+
+    /**
+     * Check if user is Ketua.
+     */
+    public function isKetua(): bool
+    {
+        return $this->role === 'ketua';
+    }
+
+    /**
+     * Check if user can approve as specific role.
+     */
+    public function canApproveAs(string $role): bool
+    {
+        return $this->role === $role;
     }
 }

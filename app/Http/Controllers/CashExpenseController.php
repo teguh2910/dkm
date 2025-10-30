@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateCashExpenseRequest;
 use App\Models\Barcode;
 use App\Models\CashExpense;
 use App\Models\ExpenseCategory;
+use Illuminate\Support\Facades\Auth;
 
 class CashExpenseController extends Controller
 {
@@ -28,6 +29,11 @@ class CashExpenseController extends Controller
      */
     public function create()
     {
+        // Only Dept PIC can create
+        if (! Auth::user()->isDeptPic()) {
+            abort(403, 'Hanya Dept PIC yang dapat membuat pengeluaran baru');
+        }
+
         $barcodes = Barcode::query()->where('is_active', true)->get();
         $categories = ExpenseCategory::query()->where('is_active', true)->get();
 
@@ -39,6 +45,11 @@ class CashExpenseController extends Controller
      */
     public function store(StoreCashExpenseRequest $request)
     {
+        // Only Dept PIC can create
+        if (! Auth::user()->isDeptPic()) {
+            abort(403, 'Hanya Dept PIC yang dapat membuat pengeluaran baru');
+        }
+
         CashExpense::create($request->validated());
 
         return redirect()
@@ -61,6 +72,11 @@ class CashExpenseController extends Controller
      */
     public function edit(CashExpense $cashExpense)
     {
+        // Only Dept PIC can edit
+        if (! Auth::user()->isDeptPic()) {
+            abort(403, 'Hanya Dept PIC yang dapat mengedit pengeluaran');
+        }
+
         $barcodes = Barcode::query()->where('is_active', true)->get();
         $categories = ExpenseCategory::query()->where('is_active', true)->get();
 
@@ -72,6 +88,11 @@ class CashExpenseController extends Controller
      */
     public function update(UpdateCashExpenseRequest $request, CashExpense $cashExpense)
     {
+        // Only Dept PIC can update
+        if (! Auth::user()->isDeptPic()) {
+            abort(403, 'Hanya Dept PIC yang dapat mengupdate pengeluaran');
+        }
+
         $cashExpense->update($request->validated());
 
         return redirect()
@@ -84,6 +105,11 @@ class CashExpenseController extends Controller
      */
     public function destroy(CashExpense $cashExpense)
     {
+        // Only Dept PIC can delete
+        if (! Auth::user()->isDeptPic()) {
+            abort(403, 'Hanya Dept PIC yang dapat menghapus pengeluaran');
+        }
+
         $cashExpense->delete();
 
         return redirect()
@@ -96,6 +122,24 @@ class CashExpenseController extends Controller
      */
     public function updateApproval(CashExpense $cashExpense, string $role, string $status)
     {
+        // Check if user has permission to approve for this role
+        if (! Auth::user()->canApproveAs($role)) {
+            abort(403, 'Anda tidak memiliki akses untuk approval ini');
+        }
+
+        // Check approval order: bendahara -> sekretaris -> ketua
+        if ($role === 'sekretaris' && $cashExpense->status_bendahara !== 'approved') {
+            return redirect()
+                ->back()
+                ->with('error', 'Bendahara harus approve terlebih dahulu');
+        }
+
+        if ($role === 'ketua' && ($cashExpense->status_bendahara !== 'approved' || $cashExpense->status_sekretaris !== 'approved')) {
+            return redirect()
+                ->back()
+                ->with('error', 'Bendahara dan Sekretaris harus approve terlebih dahulu');
+        }
+
         $field = "status_{$role}";
         $dateField = "approved_{$role}_at";
 

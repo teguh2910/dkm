@@ -8,7 +8,9 @@
             <h2 style="font-size: 20px; font-weight: 600; color: #1f2937;">Detail Pengeluaran Kas Kecil</h2>
             <div style="display: flex; gap: 8px;">
                 <button onclick="window.print()" class="btn btn-success">🖨️ Print</button>
-                <a href="{{ route('cash-expenses.edit', $cashExpense) }}" class="btn btn-warning">Edit</a>
+                @if (Auth::user()->isDeptPic())
+                    <a href="{{ route('cash-expenses.edit', $cashExpense) }}" class="btn btn-warning">Edit</a>
+                @endif
                 <a href="{{ route('cash-expenses.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
@@ -127,6 +129,95 @@
                     </div>
                 @endif
             </div>
+        </div>
+
+        {{-- Approval Actions --}}
+        <div style="margin-top: 24px;">
+            @if (Auth::user()->isBendahara() && $cashExpense->status_bendahara === 'pending')
+                <div style="padding: 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px;">
+                    <h4 style="font-weight: 600; margin-bottom: 12px;">Approval Bendahara</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <form action="{{ route('cash-expenses.approval', [$cashExpense, 'bendahara', 'approved']) }}"
+                            method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Approve pengeluaran ini?')">
+                                ✓ Approve
+                            </button>
+                        </form>
+                        <form action="{{ route('cash-expenses.approval', [$cashExpense, 'bendahara', 'rejected']) }}"
+                            method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Reject pengeluaran ini?')">
+                                ✗ Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
+            @if (Auth::user()->isSekretaris() && $cashExpense->status_sekretaris === 'pending')
+                @if ($cashExpense->status_bendahara === 'approved')
+                    <div style="padding: 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px;">
+                        <h4 style="font-weight: 600; margin-bottom: 12px;">Approval Sekretaris</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <form action="{{ route('cash-expenses.approval', [$cashExpense, 'sekretaris', 'approved']) }}"
+                                method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Approve pengeluaran ini?')">
+                                    ✓ Approve
+                                </button>
+                            </form>
+                            <form action="{{ route('cash-expenses.approval', [$cashExpense, 'sekretaris', 'rejected']) }}"
+                                method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Reject pengeluaran ini?')">
+                                    ✗ Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <div
+                        style="padding: 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; color: #6b7280;">
+                        Menunggu approval dari Bendahara terlebih dahulu
+                    </div>
+                @endif
+            @endif
+
+            @if (Auth::user()->isKetua() && $cashExpense->status_ketua === 'pending')
+                @if ($cashExpense->status_bendahara === 'approved' && $cashExpense->status_sekretaris === 'approved')
+                    <div style="padding: 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px;">
+                        <h4 style="font-weight: 600; margin-bottom: 12px;">Approval Ketua</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <form action="{{ route('cash-expenses.approval', [$cashExpense, 'ketua', 'approved']) }}"
+                                method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Approve pengeluaran ini?')">
+                                    ✓ Approve
+                                </button>
+                            </form>
+                            <form action="{{ route('cash-expenses.approval', [$cashExpense, 'ketua', 'rejected']) }}"
+                                method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Reject pengeluaran ini?')">
+                                    ✗ Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <div
+                        style="padding: 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; color: #6b7280;">
+                        Menunggu approval dari Bendahara dan Sekretaris terlebih dahulu
+                    </div>
+                @endif
+            @endif
         </div>
 
         @if ($cashExpense->isFullyApproved())

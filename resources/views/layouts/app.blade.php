@@ -247,9 +247,35 @@
 
 <body>
     <div class="header">
-        <div class="container">
-            <h1>DKM AL-IKLAS - PT Aisin Indonesia</h1>
-            <p style="color: #6b7280; margin-top: 4px;">Sistem Pencatatan Bukti Pengeluaran Kas Kecil</p>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>DKM AL-IKLAS - PT Aisin Indonesia</h1>
+                <p style="color: #6b7280; margin-top: 4px;">Sistem Pencatatan Bukti Pengeluaran Kas Kecil</p>
+            </div>
+            @auth
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; color: #1f2937;">{{ Auth::user()->name }}</div>
+                        <div style="font-size: 12px; color: #6b7280;">
+                            @if (Auth::user()->isDeptPic())
+                                Dept PIC
+                            @elseif(Auth::user()->isBendahara())
+                                Bendahara
+                            @elseif(Auth::user()->isSekretaris())
+                                Sekretaris
+                            @elseif(Auth::user()->isKetua())
+                                Ketua
+                            @endif
+                        </div>
+                    </div>
+                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            @endauth
         </div>
     </div>
 

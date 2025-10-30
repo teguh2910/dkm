@@ -7,10 +7,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="font-size: 20px; font-weight: 600; color: #1f2937;">Daftar Pengeluaran Kas Kecil</h2>
             <div style="display: flex; gap: 8px;">
-                <a href="{{ route('cash-expenses.download-format') }}" class="btn btn-success" target="_blank">
-                    📄 Download Format Excel
-                </a>
-                <a href="{{ route('cash-expenses.create') }}" class="btn btn-primary">+ Tambah Pengeluaran</a>
+
+                @if (Auth::user()->isDeptPic())
+                    <a href="{{ route('cash-expenses.create') }}" class="btn btn-primary">+ Tambah Pengeluaran</a>
+                @endif
             </div>
         </div>
 
@@ -55,19 +55,22 @@
                                 </span>
                             </td>
                             <td style="text-align: center;">
-                                <div style="display: flex; gap: 4px; justify-content: center;">
+                                <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
                                     <a href="{{ route('cash-expenses.show', $expense) }}" class="btn btn-secondary"
                                         style="padding: 6px 12px; font-size: 13px;">Detail</a>
-                                    <a href="{{ route('cash-expenses.edit', $expense) }}" class="btn btn-warning"
-                                        style="padding: 6px 12px; font-size: 13px;">Edit</a>
-                                    <form action="{{ route('cash-expenses.destroy', $expense) }}" method="POST"
-                                        style="display: inline;"
-                                        onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"
-                                            style="padding: 6px 12px; font-size: 13px;">Hapus</button>
-                                    </form>
+
+                                    @if (Auth::user()->isDeptPic())
+                                        <a href="{{ route('cash-expenses.edit', $expense) }}" class="btn btn-warning"
+                                            style="padding: 6px 12px; font-size: 13px;">Edit</a>
+                                        <form action="{{ route('cash-expenses.destroy', $expense) }}" method="POST"
+                                            style="display: inline;"
+                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger"
+                                                style="padding: 6px 12px; font-size: 13px;">Hapus</button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -36,8 +36,9 @@ class CashExpenseController extends Controller
 
         $barcodes = Barcode::query()->where('is_active', true)->get();
         $categories = ExpenseCategory::query()->where('is_active', true)->get();
+        $selectedBarcodeId = request('barcode');
 
-        return view('cash-expenses.create', compact('barcodes', 'categories'));
+        return view('cash-expenses.create', compact('barcodes', 'categories', 'selectedBarcodeId'));
     }
 
     /**
@@ -50,7 +51,13 @@ class CashExpenseController extends Controller
             abort(403, 'Hanya Dept PIC yang dapat membuat pengeluaran baru');
         }
 
-        CashExpense::create($request->validated());
+        $cashExpense = CashExpense::create($request->validated());
+
+        // Update barcode spent_amount
+        $barcode = Barcode::find($cashExpense->barcode_id);
+        if ($barcode) {
+            $barcode->increment('spent_amount', $cashExpense->sebesar);
+        }
 
         return redirect()
             ->route('cash-expenses.index')
@@ -93,7 +100,34 @@ class CashExpenseController extends Controller
             abort(403, 'Hanya Dept PIC yang dapat mengupdate pengeluaran');
         }
 
+        $oldAmount = $cashExpense->sebesar;
+        $oldBarcodeId = $cashExpense->barcode_id;
+
         $cashExpense->update($request->validated());
+
+        // Update barcode spent_amount
+        $newAmount = $cashExpense->sebesar;
+        $newBarcodeId = $cashExpense->barcode_id;
+
+        if ($oldBarcodeId == $newBarcodeId) {
+            // Same barcode, adjust the difference
+            $barcode = Barcode::find($oldBarcodeId);
+            if ($barcode) {
+                $difference = $newAmount - $oldAmount;
+                $barcode->increment('spent_amount', $difference);
+            }
+        } else {
+            // Different barcode, subtract from old and add to new
+            $oldBarcode = Barcode::find($oldBarcodeId);
+            if ($oldBarcode) {
+                $oldBarcode->decrement('spent_amount', $oldAmount);
+            }
+
+            $newBarcode = Barcode::find($newBarcodeId);
+            if ($newBarcode) {
+                $newBarcode->increment('spent_amount', $newAmount);
+            }
+        }
 
         return redirect()
             ->route('cash-expenses.index')
@@ -108,6 +142,12 @@ class CashExpenseController extends Controller
         // Only Dept PIC can delete
         if (! Auth::user()->isDeptPic()) {
             abort(403, 'Hanya Dept PIC yang dapat menghapus pengeluaran');
+        }
+
+        // Restore barcode spent_amount
+        $barcode = Barcode::find($cashExpense->barcode_id);
+        if ($barcode) {
+            $barcode->decrement('spent_amount', $cashExpense->sebesar);
         }
 
         $cashExpense->delete();

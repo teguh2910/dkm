@@ -15,6 +15,9 @@ class Barcode extends Model
         'code',
         'name',
         'description',
+        'amount_budget',
+        'spent_amount',
+        'year',
         'is_active',
     ];
 
@@ -22,11 +25,26 @@ class Barcode extends Model
     {
         return [
             'is_active' => 'boolean',
+            'amount_budget' => 'decimal:2',
+            'spent_amount' => 'decimal:2',
         ];
     }
 
     public function cashExpenses(): HasMany
     {
         return $this->hasMany(CashExpense::class);
+    }
+
+    public function getRemainingBudgetAttribute(): float
+    {
+        return $this->amount_budget - $this->spent_amount;
+    }
+
+    public function getBudgetPercentageAttribute(): float
+    {
+        if ($this->amount_budget == 0) {
+            return 0;
+        }
+        return ($this->spent_amount / $this->amount_budget) * 100;
     }
 }

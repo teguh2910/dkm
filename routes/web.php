@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\CashExpenseController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('cash-expenses/{cashExpense}/approval/{role}/{status}', [CashExpenseController::class, 'updateApproval'])
         ->name('cash-expenses.approval');
+
+    // Barcode Routes
+    Route::get('barcodes/upload', [BarcodeController::class, 'showUpload'])->name('barcodes.upload');
+    Route::post('barcodes/upload', [BarcodeController::class, 'upload'])->name('barcodes.upload.store');
+    Route::get('barcodes/template', [BarcodeController::class, 'downloadTemplate'])->name('barcodes.template');
+    Route::resource('barcodes', BarcodeController::class);
 });

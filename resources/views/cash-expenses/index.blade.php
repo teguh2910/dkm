@@ -35,7 +35,12 @@
                         <tr>
                             <td>{{ $expenses->firstItem() + $index }}</td>
                             <td>{{ $expense->tanggal->format('d/m/Y') }}</td>
-                            <td>{{ $expense->barcode->code }}</td>
+                            <td>
+                                <a href="{{ route('barcodes.show', $expense->barcode) }}"
+                                    style="color: #3b82f6; font-weight: 600; text-decoration: none;">
+                                    {{ $expense->barcode->code }}
+                                </a>
+                            </td>
                             <td>{{ $expense->dibayarkan_kepada }}</td>
                             <td style="text-align: right;">Rp {{ number_format($expense->sebesar, 0, ',', '.') }}</td>
                             <td>{{ $expense->expenseCategory->name }}</td>

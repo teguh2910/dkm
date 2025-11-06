@@ -16,14 +16,26 @@
                 <select name="barcode_id" id="barcode_id" class="form-control select2" required>
                     <option value="">-- Pilih Kode Barcode --</option>
                     @foreach ($barcodes as $barcode)
-                        <option value="{{ $barcode->id }}" {{ old('barcode_id') == $barcode->id ? 'selected' : '' }}>
+                        <option value="{{ $barcode->id }}"
+                            {{ old('barcode_id', $selectedBarcodeId ?? null) == $barcode->id ? 'selected' : '' }}
+                            data-budget="{{ $barcode->amount_budget }}" data-spent="{{ $barcode->spent_amount }}"
+                            data-remaining="{{ $barcode->remaining_budget }}">
                             {{ $barcode->code }} - {{ $barcode->name }}
+                            @if ($barcode->amount_budget)
+                                (Sisa: Rp {{ number_format($barcode->remaining_budget, 0, ',', '.') }})
+                            @endif
                         </option>
                     @endforeach
                 </select>
                 @error('barcode_id')
                     <div class="text-error">{{ $message }}</div>
                 @enderror
+                <div id="budget-info"
+                    style="margin-top: 8px; padding: 8px; background-color: #eff6ff; border-radius: 6px; display: none;">
+                    <small style="color: #1e40af;">
+                        <strong>Sisa Budget:</strong> <span id="remaining-budget">-</span>
+                    </small>
+                </div>
             </div>
 
             <div class="form-group">
@@ -106,6 +118,30 @@
                 theme: 'default',
                 width: '100%'
             });
+
+            // Show budget info when barcode is selected
+            $('#barcode_id').on('change', function() {
+                const selectedOption = $(this).find(':selected');
+                const remaining = selectedOption.data('remaining');
+
+                if (remaining !== undefined && remaining !== null) {
+                    const formatted = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(remaining);
+
+                    $('#remaining-budget').text(formatted);
+                    $('#budget-info').show();
+                } else {
+                    $('#budget-info').hide();
+                }
+            });
+
+            // Trigger on page load if barcode is preselected
+            if ($('#barcode_id').val()) {
+                $('#barcode_id').trigger('change');
+            }
 
             // Auto-fill Terbilang
             $('#sebesar').on('input', function() {

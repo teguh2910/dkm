@@ -96,6 +96,20 @@
             background: #4b5563;
         }
 
+        .btn-info {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0284c7;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
         .form-group {
             margin-bottom: 1rem;
         }
@@ -182,6 +196,16 @@
         .badge-rejected {
             background: #fee2e2;
             color: #991b1b;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
         }
 
         .header {
@@ -278,6 +302,23 @@
             @endauth
         </div>
     </div>
+
+    @auth
+        <div style="background-color: white; border-bottom: 1px solid #e5e7eb; margin-bottom: 20px;">
+            <div class="container">
+                <nav style="display: flex; gap: 24px; padding: 12px 0;">
+                    <a href="{{ route('cash-expenses.index') }}"
+                        style="text-decoration: none; color: {{ request()->routeIs('cash-expenses.*') ? '#3b82f6' : '#6b7280' }}; font-weight: 500; padding: 8px 0; border-bottom: 2px solid {{ request()->routeIs('cash-expenses.*') ? '#3b82f6' : 'transparent' }};">
+                        💰 Pengeluaran Kas
+                    </a>
+                    <a href="{{ route('barcodes.index') }}"
+                        style="text-decoration: none; color: {{ request()->routeIs('barcodes.*') ? '#3b82f6' : '#6b7280' }}; font-weight: 500; padding: 8px 0; border-bottom: 2px solid {{ request()->routeIs('barcodes.*') ? '#3b82f6' : 'transparent' }};">
+                        📦 Master Budget
+                    </a>
+                </nav>
+            </div>
+        </div>
+    @endauth
 
     <div class="container">
         @if (session('success'))

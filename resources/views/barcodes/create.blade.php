@@ -24,6 +24,25 @@
 
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">
+                    Master Code
+                </label>
+                <select name="master_code_id"
+                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                    <option value="">-- Pilih Master Code (Opsional) --</option>
+                    @foreach ($masterCodes as $masterCode)
+                        <option value="{{ $masterCode->id }}"
+                            {{ old('master_code_id') == $masterCode->id ? 'selected' : '' }}>
+                            {{ $masterCode->code }} - {{ $masterCode->name }} ({{ $masterCode->year }})
+                        </option>
+                    @endforeach
+                </select>
+                <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                    Pilih master code untuk mengelompokkan barcode ini (opsional)
+                </small>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">
                     Kode Barcode <span style="color: #dc2626;">*</span>
                 </label>
                 <input type="text" name="code" value="{{ old('code') }}" required

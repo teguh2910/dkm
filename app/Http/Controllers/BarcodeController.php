@@ -5,33 +5,39 @@ namespace App\Http\Controllers;
 use App\Models\Barcode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class BarcodeController extends Controller
 {
     public function index()
     {
-        $barcodes = Barcode::latest()->paginate(10);
+        $barcodes = Barcode::with('masterCode')->latest()->paginate(10);
+
         return view('barcodes.index', compact('barcodes'));
     }
 
     public function create()
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
-        
-        return view('barcodes.create');
+
+        $masterCodes = \App\Models\MasterCode::where('is_active', true)
+            ->orderBy('year', 'desc')
+            ->orderBy('code')
+            ->get();
+
+        return view('barcodes.create', compact('masterCodes'));
     }
 
     public function store(Request $request)
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
 
         $validated = $request->validate([
+            'master_code_id' => 'nullable|exists:master_codes,id',
             'code' => 'required|string|max:255|unique:barcodes,code',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -49,27 +55,33 @@ class BarcodeController extends Controller
         $barcode->load(['cashExpenses' => function ($query) {
             $query->latest()->take(10);
         }]);
-        
+
         return view('barcodes.show', compact('barcode'));
     }
 
     public function edit(Barcode $barcode)
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
-        
-        return view('barcodes.edit', compact('barcode'));
+
+        $masterCodes = \App\Models\MasterCode::where('is_active', true)
+            ->orderBy('year', 'desc')
+            ->orderBy('code')
+            ->get();
+
+        return view('barcodes.edit', compact('barcode', 'masterCodes'));
     }
 
     public function update(Request $request, Barcode $barcode)
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
 
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:barcodes,code,' . $barcode->id,
+            'master_code_id' => 'nullable|exists:master_codes,id',
+            'code' => 'required|string|max:255|unique:barcodes,code,'.$barcode->id,
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'amount_budget' => 'nullable|numeric|min:0',
@@ -83,7 +95,7 @@ class BarcodeController extends Controller
 
     public function destroy(Barcode $barcode)
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -94,16 +106,16 @@ class BarcodeController extends Controller
 
     public function showUpload()
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         return view('barcodes.upload');
     }
 
     public function upload(Request $request)
     {
-        if (!Auth::user()->isDeptPic()) {
+        if (! Auth::user()->isDeptPic()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -143,13 +155,13 @@ class BarcodeController extends Controller
                 );
                 $imported++;
             } catch (\Exception $e) {
-                $errors[] = "Baris $rowNumber: " . $e->getMessage();
+                $errors[] = "Baris $rowNumber: ".$e->getMessage();
             }
         }
 
         if (count($errors) > 0) {
             return redirect()->route('barcodes.index')
-                ->with('warning', "Berhasil import $imported data. Error: " . implode(', ', $errors));
+                ->with('warning', "Berhasil import $imported data. Error: ".implode(', ', $errors));
         }
 
         return redirect()->route('barcodes.index')
@@ -159,8 +171,8 @@ class BarcodeController extends Controller
     public function downloadTemplate()
     {
         $filePath = public_path('barcode_template.xlsx');
-        
-        if (!file_exists($filePath)) {
+
+        if (! file_exists($filePath)) {
             return redirect()->back()->with('error', 'Template file tidak ditemukan!');
         }
 

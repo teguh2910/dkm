@@ -27,7 +27,6 @@ class UpdateCashExpenseRequest extends FormRequest
             'dibayarkan_kepada' => ['required', 'string', 'max:255'],
             'sebesar' => ['required', 'numeric', 'min:0'],
             'terbilang' => ['required', 'string'],
-            'expense_category_id' => ['required', 'exists:expense_categories,id'],
             'keterangan2' => ['nullable', 'string'],
             'status_bendahara' => ['sometimes', 'in:pending,approved,rejected'],
             'status_sekretaris' => ['sometimes', 'in:pending,approved,rejected'],

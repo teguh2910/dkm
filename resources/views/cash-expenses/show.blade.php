@@ -55,13 +55,6 @@
             <div>
                 <div style="margin-bottom: 16px;">
                     <label
-                        style="display: block; font-weight: 600; color: #6b7280; font-size: 13px; margin-bottom: 4px;">Kategori
-                        Pengeluaran</label>
-                    <div style="font-size: 15px; color: #1f2937;">{{ $cashExpense->expenseCategory->name }}</div>
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <label
                         style="display: block; font-weight: 600; color: #6b7280; font-size: 13px; margin-bottom: 4px;">Keterangan
                         Tambahan</label>
                     <div style="font-size: 15px; color: #1f2937;">{{ $cashExpense->keterangan2 ?? '-' }}</div>

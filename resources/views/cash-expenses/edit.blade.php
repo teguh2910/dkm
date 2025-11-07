@@ -20,6 +20,9 @@
                         <option value="{{ $barcode->id }}"
                             {{ old('barcode_id', $cashExpense->barcode_id) == $barcode->id ? 'selected' : '' }}>
                             {{ $barcode->code }} - {{ $barcode->name }}
+                            @if ($barcode->description)
+                                - {{ $barcode->description }}
+                            @endif
                         </option>
                     @endforeach
                 </select>
@@ -64,23 +67,6 @@
                     value="{{ old('terbilang', $cashExpense->terbilang) }}"
                     placeholder="Otomatis terisi setelah mengisi jumlah" readonly required>
                 @error('terbilang')
-                    <div class="text-error">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="expense_category_id" class="form-label">Kategori Pengeluaran <span
-                        style="color: #ef4444;">*</span></label>
-                <select name="expense_category_id" id="expense_category_id" class="form-control select2" required>
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ old('expense_category_id', $cashExpense->expense_category_id) == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('expense_category_id')
                     <div class="text-error">{{ $message }}</div>
                 @enderror
             </div>

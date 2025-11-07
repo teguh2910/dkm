@@ -22,12 +22,12 @@ class StoreCashExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'year' => ['required', 'integer', 'min:2000', 'max:2100'],
             'barcode_id' => ['required', 'exists:barcodes,id'],
             'tanggal' => ['required', 'date'],
             'dibayarkan_kepada' => ['required', 'string', 'max:255'],
             'sebesar' => ['required', 'numeric', 'min:0'],
             'terbilang' => ['required', 'string'],
-            'expense_category_id' => ['required', 'exists:expense_categories,id'],
             'keterangan2' => ['nullable', 'string'],
         ];
     }
@@ -40,12 +40,12 @@ class StoreCashExpenseRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'year' => 'tahun',
             'barcode_id' => 'kode barcode',
             'tanggal' => 'tanggal',
             'dibayarkan_kepada' => 'dibayarkan kepada',
             'sebesar' => 'jumlah',
             'terbilang' => 'terbilang',
-            'expense_category_id' => 'kategori pengeluaran',
             'keterangan2' => 'keterangan',
         ];
     }
@@ -58,6 +58,10 @@ class StoreCashExpenseRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'year.required' => 'Tahun wajib dipilih',
+            'year.integer' => 'Tahun harus berupa angka',
+            'year.min' => 'Tahun minimal 2000',
+            'year.max' => 'Tahun maksimal 2100',
             'barcode_id.required' => 'Kode barcode wajib dipilih',
             'barcode_id.exists' => 'Kode barcode tidak valid',
             'tanggal.required' => 'Tanggal wajib diisi',

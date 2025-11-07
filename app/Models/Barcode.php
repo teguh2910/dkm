@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Barcode extends Model
@@ -12,6 +13,7 @@ class Barcode extends Model
     use HasFactory;
 
     protected $fillable = [
+        'master_code_id',
         'code',
         'name',
         'description',
@@ -30,6 +32,11 @@ class Barcode extends Model
         ];
     }
 
+    public function masterCode(): BelongsTo
+    {
+        return $this->belongsTo(MasterCode::class);
+    }
+
     public function cashExpenses(): HasMany
     {
         return $this->hasMany(CashExpense::class);
@@ -45,6 +52,7 @@ class Barcode extends Model
         if ($this->amount_budget == 0) {
             return 0;
         }
+
         return ($this->spent_amount / $this->amount_budget) * 100;
     }
 }

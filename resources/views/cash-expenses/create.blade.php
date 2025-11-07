@@ -12,20 +12,51 @@
             @csrf
 
             <div class="form-group">
-                <label for="barcode_id" class="form-label">Kode Barcode <span style="color: #ef4444;">*</span></label>
-                <select name="barcode_id" id="barcode_id" class="form-control select2" required>
-                    <option value="">-- Pilih Kode Barcode --</option>
-                    @foreach ($barcodes as $barcode)
-                        <option value="{{ $barcode->id }}"
-                            {{ old('barcode_id', $selectedBarcodeId ?? null) == $barcode->id ? 'selected' : '' }}
-                            data-budget="{{ $barcode->amount_budget }}" data-spent="{{ $barcode->spent_amount }}"
-                            data-remaining="{{ $barcode->remaining_budget }}">
-                            {{ $barcode->code }} - {{ $barcode->name }}
-                            @if ($barcode->amount_budget)
-                                (Sisa: Rp {{ number_format($barcode->remaining_budget, 0, ',', '.') }})
-                            @endif
+                <label for="year" class="form-label">Tahun <span style="color: #ef4444;">*</span></label>
+                <select name="year" id="year" class="form-control" required>
+                    <option value="">-- Pilih Tahun --</option>
+                    @foreach ($years as $year)
+                        <option value="{{ $year }}"
+                            {{ old('year', $selectedYear ?? null) == $year ? 'selected' : '' }}>
+                            {{ $year }}
                         </option>
                     @endforeach
+                </select>
+                @error('year')
+                    <div class="text-error">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="master_code_id" class="form-label">Master Code <span style="color: #ef4444;">*</span></label>
+                <select name="master_code_id" id="master_code_id" class="form-control" required disabled>
+                    <option value="">-- Pilih Tahun Terlebih Dahulu --</option>
+                </select>
+                @error('master_code_id')
+                    <div class="text-error">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="barcode_id" class="form-label">Kode Barcode <span style="color: #ef4444;">*</span></label>
+                <select name="barcode_id" id="barcode_id" class="form-control select2" required disabled>
+                    <option value="">-- Pilih Master Code Terlebih Dahulu --</option>
+                    @if ($barcodes->count() > 0)
+                        @foreach ($barcodes as $barcode)
+                            <option value="{{ $barcode->id }}"
+                                {{ old('barcode_id', $selectedBarcodeId ?? null) == $barcode->id ? 'selected' : '' }}
+                                data-budget="{{ $barcode->amount_budget }}" data-spent="{{ $barcode->spent_amount }}"
+                                data-remaining="{{ $barcode->remaining_budget }}">
+                                {{ $barcode->code }} - {{ $barcode->name }}
+                                @if ($barcode->description)
+                                    - {{ $barcode->description }}
+                                @endif
+                                @if ($barcode->amount_budget)
+                                    (Sisa: Rp {{ number_format($barcode->remaining_budget, 0, ',', '.') }})
+                                @endif
+                            </option>
+                        @endforeach
+                    @endif
                 </select>
                 @error('barcode_id')
                     <div class="text-error">{{ $message }}</div>
@@ -76,23 +107,6 @@
             </div>
 
             <div class="form-group">
-                <label for="expense_category_id" class="form-label">Kategori Pengeluaran <span
-                        style="color: #ef4444;">*</span></label>
-                <select name="expense_category_id" id="expense_category_id" class="form-control select2" required>
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}"
-                            {{ old('expense_category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('expense_category_id')
-                    <div class="text-error">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
                 <label for="keterangan2" class="form-label">Keterangan Tambahan</label>
                 <textarea name="keterangan2" id="keterangan2" class="form-control" rows="3"
                     placeholder="Keterangan tambahan (opsional)">{{ old('keterangan2') }}</textarea>
@@ -119,6 +133,120 @@
                 width: '100%'
             });
 
+            // Year change - load master codes
+            $('#year').on('change', function() {
+                const year = $(this).val();
+                const masterCodeSelect = $('#master_code_id');
+                const barcodeSelect = $('#barcode_id');
+
+                // Reset downstream selects
+                masterCodeSelect.html('<option value="">-- Loading... --</option>').prop('disabled', true);
+                barcodeSelect.html('<option value="">-- Pilih Master Code Terlebih Dahulu --</option>')
+                    .prop('disabled', true);
+                $('#budget-info').hide();
+
+                if (!year) {
+                    masterCodeSelect.html('<option value="">-- Pilih Tahun Terlebih Dahulu --</option>');
+                    return;
+                }
+
+                // Load master codes
+                $.ajax({
+                    url: `/api/master-codes/year/${year}`,
+                    method: 'GET',
+                    success: function(data) {
+                        const selectedMasterCodeId =
+                            '{{ old('master_code_id', $selectedMasterCodeId ?? '') }}';
+                        masterCodeSelect.html(
+                            '<option value="">-- Pilih Master Code --</option>');
+                        data.forEach(function(mc) {
+                            const selected = selectedMasterCodeId == mc.id ?
+                                'selected' : '';
+                            masterCodeSelect.append(
+                                `<option value="${mc.id}" ${selected}>${mc.code} - ${mc.name}</option>`
+                            );
+                        });
+                        masterCodeSelect.prop('disabled', false);
+
+                        // If preselected, trigger change
+                        @if (!empty($selectedMasterCodeId))
+                            masterCodeSelect.trigger('change');
+                        @endif
+                    },
+                    error: function() {
+                        masterCodeSelect.html(
+                            '<option value="">-- Error loading data --</option>');
+                    }
+                });
+            });
+
+            // Master Code change - load barcodes
+            $('#master_code_id').on('change', function() {
+                const masterCodeId = $(this).val();
+                const year = $('#year').val();
+                const barcodeSelect = $('#barcode_id');
+
+                // Reset barcode select
+                barcodeSelect.html('<option value="">-- Loading... --</option>').prop('disabled', true);
+                $('#budget-info').hide();
+
+                if (!masterCodeId) {
+                    barcodeSelect.html('<option value="">-- Pilih Master Code Terlebih Dahulu --</option>');
+                    return;
+                }
+
+                // Load barcodes
+                $.ajax({
+                    url: `/api/barcodes/master-code/${masterCodeId}/year/${year}`,
+                    method: 'GET',
+                    success: function(data) {
+                        const selectedBarcodeId =
+                            '{{ old('barcode_id', $selectedBarcodeId ?? '') }}';
+                        barcodeSelect.html('<option value="">-- Pilih Barcode --</option>');
+                        data.forEach(function(barcode) {
+                            const remaining = barcode.amount_budget - barcode
+                                .spent_amount;
+                            const formatted = new Intl.NumberFormat('id-ID').format(
+                                remaining);
+                            const selected = selectedBarcodeId == barcode.id ?
+                                'selected' : '';
+
+                            let optionText = `${barcode.code} - ${barcode.name}`;
+                            if (barcode.description) {
+                                optionText += ` - ${barcode.description}`;
+                            }
+                            optionText += ` (Sisa: Rp ${formatted})`;
+
+                            barcodeSelect.append(`
+                                <option value="${barcode.id}" ${selected}
+                                    data-budget="${barcode.amount_budget}"
+                                    data-spent="${barcode.spent_amount}"
+                                    data-remaining="${remaining}">
+                                    ${optionText}
+                                </option>
+                            `);
+                        });
+                        barcodeSelect.prop('disabled', false);
+
+                        // Reinitialize Select2
+                        barcodeSelect.select2('destroy');
+                        barcodeSelect.select2({
+                            theme: 'default',
+                            width: '100%'
+                        });
+
+                        // If preselected, trigger change
+                        @if (!empty($selectedBarcodeId))
+                            barcodeSelect.trigger('change');
+                        @endif
+                    },
+                    error: function() {
+                        barcodeSelect.html(
+                            '<option value="">-- Error loading data --</option>');
+                    }
+                });
+            });
+
             // Show budget info when barcode is selected
             $('#barcode_id').on('change', function() {
                 const selectedOption = $(this).find(':selected');
@@ -138,10 +266,10 @@
                 }
             });
 
-            // Trigger on page load if barcode is preselected
-            if ($('#barcode_id').val()) {
-                $('#barcode_id').trigger('change');
-            }
+            // Trigger on page load if year is preselected
+            @if (!empty($selectedYear))
+                $('#year').trigger('change');
+            @endif
 
             // Auto-fill Terbilang
             $('#sebesar').on('input', function() {

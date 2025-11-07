@@ -12,11 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('barcodes', function (Blueprint $table) {
-            if (! Schema::hasColumn('barcodes', 'description')) {
-                $table->text('description')->nullable()->after('name');
-            }
-            $table->decimal('amount_budget', 15, 2)->nullable()->after('name');
-            $table->year('year')->nullable()->after('amount_budget');
+            $table->foreignId('master_code_id')->nullable()->after('id')->constrained('master_codes')->nullOnDelete();
         });
     }
 
@@ -26,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('barcodes', function (Blueprint $table) {
-            $table->dropColumn(['amount_budget', 'year']);
+            $table->dropForeign(['master_code_id']);
+            $table->dropColumn('master_code_id');
         });
     }
 };

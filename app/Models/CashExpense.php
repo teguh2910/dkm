@@ -13,11 +13,11 @@ class CashExpense extends Model
 
     protected $fillable = [
         'barcode_id',
+        'year',
         'tanggal',
         'dibayarkan_kepada',
         'sebesar',
         'terbilang',
-        'expense_category_id',
         'keterangan2',
         'status_bendahara',
         'status_sekretaris',
@@ -41,11 +41,6 @@ class CashExpense extends Model
     public function barcode(): BelongsTo
     {
         return $this->belongsTo(Barcode::class);
-    }
-
-    public function expenseCategory(): BelongsTo
-    {
-        return $this->belongsTo(ExpenseCategory::class);
     }
 
     public function isFullyApproved(): bool

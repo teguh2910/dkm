@@ -96,9 +96,8 @@ class ExpenseCategorySeeder extends Seeder
             ['name' => 'Bantuan PUK', 'description' => 'Bantuan PUK'],
             ['name' => 'Bantuan Koperasi', 'description' => 'Bantuan Koperasi'],
             ['name' => 'Bantuan dari Luar', 'description' => 'Bantuan dari Luar'],
-            ['name' => 'Kotak Infak Koperasi', 'description' => 'Kotak Infak Koperasi']
+            ['name' => 'Kotak Infak Koperasi', 'description' => 'Kotak Infak Koperasi'],
         ];
-
 
         foreach ($categories as $category) {
             ExpenseCategory::create($category);

@@ -311,9 +311,13 @@
                         style="text-decoration: none; color: {{ request()->routeIs('cash-expenses.*') ? '#3b82f6' : '#6b7280' }}; font-weight: 500; padding: 8px 0; border-bottom: 2px solid {{ request()->routeIs('cash-expenses.*') ? '#3b82f6' : 'transparent' }};">
                         💰 Pengeluaran Kas
                     </a>
+                    <a href="{{ route('master-codes.index') }}"
+                        style="text-decoration: none; color: {{ request()->routeIs('master-codes.*') ? '#3b82f6' : '#6b7280' }}; font-weight: 500; padding: 8px 0; border-bottom: 2px solid {{ request()->routeIs('master-codes.*') ? '#3b82f6' : 'transparent' }};">
+                        � Master Section
+                    </a>
                     <a href="{{ route('barcodes.index') }}"
                         style="text-decoration: none; color: {{ request()->routeIs('barcodes.*') ? '#3b82f6' : '#6b7280' }}; font-weight: 500; padding: 8px 0; border-bottom: 2px solid {{ request()->routeIs('barcodes.*') ? '#3b82f6' : 'transparent' }};">
-                        📦 Master Budget
+                        📦 Budget
                     </a>
                 </nav>
             </div>

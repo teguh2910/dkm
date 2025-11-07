@@ -41,6 +41,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Section</th>
                         <th>Kode Barcode</th>
                         <th>Nama</th>
                         <th>Deskripsi</th>
@@ -56,6 +57,15 @@
                     @forelse($barcodes as $index => $barcode)
                         <tr>
                             <td>{{ $barcodes->firstItem() + $index }}</td>
+                            <td>
+                                @if ($barcode->masterCode)
+                                    <div style="font-size: 12px; color: #6b7280;">
+                                        {{ $barcode->masterCode->code }}
+                                    </div>
+                                @else
+                                    <span style="color: #9ca3af;">-</span>
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('barcodes.show', $barcode) }}"
                                     style="color: #3b82f6; font-weight: 600; text-decoration: none;">
@@ -101,7 +111,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ Auth::user()->isDeptPic() ? '8' : '7' }}"
+                            <td colspan="{{ Auth::user()->isDeptPic() ? '9' : '8' }}"
                                 style="text-align: center; padding: 24px; color: #6b7280;">
                                 Belum ada data barcode.
                             </td>
